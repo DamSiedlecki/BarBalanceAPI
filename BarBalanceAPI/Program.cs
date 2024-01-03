@@ -1,4 +1,3 @@
-using Azure.Identity;
 using BarBalanceAPI.Data;
 using BarBalanceAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,89 +12,59 @@ var app = builder.Build();
 
 var revenues = app.MapGroup("/revenues");
 
-revenues.MapGet("/", GetAllRevenues);
-revenues.MapGet("/{id}", GetRevenue);
-revenues.MapPost("/", CreateRevenue);
-revenues.MapPut("/{id}", UpdateRevenue);
-revenues.MapDelete("/{id}", DeleteRevenue);
+revenues.MapGet("/", async (DataContext db) =>
+    await db.Revenues.ToListAsync());
 
-static async Task<IResult> GetAllRevenues(DataContext db)
+revenues.MapGet("/{id}", async (int id, DataContext db) =>
+    await db.Revenues.FindAsync(id)
+    is Revenue revenue
+        ? Results.Ok(revenue)
+        : Results.NotFound());
+
+revenues.MapPost("/", async (Revenue revenue, DataContext db) =>
 {
-   return TypedResults.Ok(await db.Revenues.Select(r => new RevenueDTO(r)).ToArrayAsync());
-}
-
-static async Task<IResult> GetRevenue(int id, DataContext db)
-{
-    return await db.Revenues.FindAsync(id)
-        is Revenue revenue
-            ? TypedResults.Ok(new RevenueDTO(revenue))
-            : TypedResults.NotFound();
-}
-
-static async Task<IResult> CreateRevenue(RevenueDTO revenueDTO, DataContext db)
-{
-    var revenue = new Revenue
-    {
-        ShiftDate = revenueDTO.ShiftDate,
-        CashOpening = revenueDTO.CashOpening,
-        SafeOpening = revenueDTO.SafeOpening,
-        CashReceived = revenueDTO.CashReceived,
-        CashWithdrawn = revenueDTO.CashWithdrawn,
-        CashClosing = revenueDTO.CashClosing,
-        SafeClosing = revenueDTO.SafeClosing,
-        CardPayments = revenueDTO.CardPayments,
-        DailyReport = revenueDTO.DailyReport,
-        InternalExpenditure = revenueDTO.InternalExpenditure,
-        InvoicesWithoutFiscalization = revenueDTO.InvoicesWithoutFiscalization,
-        CardTips = revenueDTO.CardTips,
-        DailyRevenueTotal = revenueDTO.DailyRevenueTotal,
-        DailyIncome = revenueDTO.DailyIncome
-};
-
     db.Revenues.Add(revenue);
     await db.SaveChangesAsync();
 
-    revenueDTO = new RevenueDTO(revenue);
+    return Results.Created($"/revenues/{revenue.ID}", revenue);
+});
 
-    return TypedResults.Created($"/todoitems/{revenue.ID}", revenueDTO);
-}
-
-static async Task<IResult> UpdateRevenue(int id, RevenueDTO revenueDTO, DataContext db)
+revenues.MapPut("/{id}", async (int id, Revenue inputReveue, DataContext db) =>
 {
     var revenue = await db.Revenues.FindAsync(id);
 
-    if (revenue is null) return TypedResults.NotFound();
+    if (revenue is null) return Results.NotFound();
 
-    revenue.ShiftDate = revenueDTO.ShiftDate;
-    revenue.CashOpening = revenueDTO.CashOpening;
-    revenue.SafeOpening = revenueDTO.SafeOpening;
-    revenue.CashReceived = revenueDTO.CashReceived;
-    revenue.CashWithdrawn = revenueDTO.CashWithdrawn;
-    revenue.CashClosing = revenueDTO.CashClosing;
-    revenue.SafeClosing = revenueDTO.SafeClosing;
-    revenue.CardPayments = revenueDTO.CardPayments;
-    revenue.DailyReport = revenueDTO.DailyReport;
-    revenue.InternalExpenditure = revenueDTO.InternalExpenditure;
-    revenue.InvoicesWithoutFiscalization = revenueDTO.InvoicesWithoutFiscalization;
-    revenue.CardTips = revenueDTO.CardTips;
-    revenue.DailyRevenueTotal = revenueDTO.DailyRevenueTotal;
-    revenue.DailyIncome = revenueDTO.DailyIncome;
+    revenue.ShiftDate = inputReveue.ShiftDate;
+    revenue.CashOpening = inputReveue.CashOpening;
+    revenue.SafeOpening = inputReveue.SafeOpening;
+    revenue.CashReceived = inputReveue.CashReceived;
+    revenue.CashWithdrawn = inputReveue.CashWithdrawn;
+    revenue.CashClosing = inputReveue.CashClosing;
+    revenue.SafeClosing = inputReveue.SafeClosing;
+    revenue.CardPayments = inputReveue.CardPayments;
+    revenue.DailyReport = inputReveue.DailyReport;
+    revenue.InternalExpenditure = inputReveue.InternalExpenditure;
+    revenue.InvoicesWithoutFiscalization = inputReveue.InvoicesWithoutFiscalization;
+    revenue.CardTips = inputReveue.CardTips;
+    revenue.DailyRevenueTotal = inputReveue.DailyRevenueTotal;
+    revenue.DailyIncome = inputReveue.DailyIncome;
 
     await db.SaveChangesAsync();
 
     return Results.NoContent();
-}
+});
 
-static async Task<IResult> DeleteRevenue(int id, DataContext db)
-{
-    if(await db.Revenues.FindAsync(id) is Revenue revenue)
+revenues.MapDelete("/{id}", async (int id, DataContext db) => {
+    if (await db.Revenues.FindAsync(id) is Revenue revenue)
     {
         db.Revenues.Remove(revenue);
         await db.SaveChangesAsync();
-        return TypedResults.NoContent();
+        return Results.NoContent();
     }
 
-    return TypedResults.NotFound();
-}
+    return Results.NotFound();
+
+});
 
 app.Run();

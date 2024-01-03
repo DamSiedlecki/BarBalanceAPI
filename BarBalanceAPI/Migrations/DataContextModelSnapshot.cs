@@ -63,9 +63,6 @@ namespace BarBalanceAPI.Migrations
                     b.Property<decimal>("InvoicesWithoutFiscalization")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
                     b.Property<decimal>("SafeClosing")
                         .HasColumnType("decimal(18, 2)");
 
