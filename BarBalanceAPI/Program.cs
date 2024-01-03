@@ -10,18 +10,18 @@ builder.Services.AddDbContext<DataContext>(options =>
 });
 var app = builder.Build();
 
-app.MapGet("/", () => "Bar Balance minimal Api.");
+var revenues = app.MapGroup("/revenues");
 
-app.MapGet("/revenues", async (DataContext db) =>
+revenues.MapGet("/", async (DataContext db) =>
     await db.Revenues.ToListAsync());
 
-app.MapGet("revenues/{id}", async (int id, DataContext db) =>
+revenues.MapGet("/{id}", async (int id, DataContext db) =>
     await db.Revenues.FindAsync(id)
     is Revenue revenue
         ? Results.Ok(revenue)
         : Results.NotFound());
 
-app.MapPost("/revenues", async (Revenue revenue, DataContext db) =>
+revenues.MapPost("/", async (Revenue revenue, DataContext db) =>
 {
     db.Revenues.Add(revenue);
     await db.SaveChangesAsync();
@@ -29,7 +29,7 @@ app.MapPost("/revenues", async (Revenue revenue, DataContext db) =>
     return Results.Created($"/revenues/{revenue.ID}", revenue);
 });
 
-app.MapPut("/revenues/{id}", async (int id, Revenue inputReveue, DataContext db) =>
+revenues.MapPut("/{id}", async (int id, Revenue inputReveue, DataContext db) =>
 {
     var revenue = await db.Revenues.FindAsync(id);
 
@@ -55,7 +55,7 @@ app.MapPut("/revenues/{id}", async (int id, Revenue inputReveue, DataContext db)
     return Results.NoContent();
 });
 
-app.MapDelete("revenues/{id}", async (int id, DataContext db) => {
+revenues.MapDelete("/{id}", async (int id, DataContext db) => {
     if (await db.Revenues.FindAsync(id) is Revenue revenue)
     {
         db.Revenues.Remove(revenue);

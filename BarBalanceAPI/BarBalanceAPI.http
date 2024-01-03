@@ -1,0 +1,61 @@
+﻿@BarBalanceAPI_HostAddress = https://localhost:7181
+
+POST {{BarBalanceAPI_HostAddress}}/revenues
+Content-Type: application/json
+
+{
+  "ShiftDate":"2024-01-01",
+  "CashOpening":"100.00",
+  "SafeOpening":"1500.00",
+  "CashReceived":"500.00",
+  "CashWithdrawn":"0.00",
+  "CashClosing":"600.00",
+  "SafeClosing":"150.00",
+  "CardPayments":"750.00",
+  "DailyReport":"1250.00",
+  "InternalExpenditure":"0.00",
+  "InvoicesWithoutFiscalization":"0.00",
+  "CardTips":"150.00",
+  "DailyRevenueTotal":"1250.00",
+  "DailyIncome":"1250.00"
+
+}
+###
+
+GET {{BarBalanceAPI_HostAddress}}/
+
+###
+
+GET {{BarBalanceAPI_HostAddress}}/revenues
+
+###
+
+GET {{BarBalanceAPI_HostAddress}}/revenues/1
+
+###
+
+PUT {{BarBalanceAPI_HostAddress}}/revenues/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "shiftDate": "2024-01-01",
+  "cashOpening": 500.00,
+  "safeOpening": 1500.00,
+  "cashReceived": 500.00,
+  "cashWithdrawn": 0.00,
+  "cashClosing": 600.00,
+  "safeClosing": 150.00,
+  "cardPayments": 750.00,
+  "dailyReport": 1250.00,
+  "internalExpenditure": 0.00,
+  "invoicesWithoutFiscalization": 0.00,
+  "cardTips": 150.00,
+  "dailyRevenueTotal": 1250.00,
+  "dailyIncome": 1250.00
+}
+###
+
+DELETE {{BarBalanceAPI_HostAddress}}/revenues/3
+
+###
