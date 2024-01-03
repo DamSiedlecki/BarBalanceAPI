@@ -46,5 +46,7 @@ namespace BarBalanceAPI.Models
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal DailyIncome { get; set; }
+
+        public bool IsDelete { get; set; }
     }
 }
