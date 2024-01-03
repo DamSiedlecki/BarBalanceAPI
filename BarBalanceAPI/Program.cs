@@ -29,4 +29,30 @@ app.MapPost("/revenues", async (Revenue revenue, DataContext db) =>
     return Results.Created($"/revenues/{revenue.ID}", revenue);
 });
 
+app.MapPut("/revenues/{id}", async (int id, Revenue inputReveue, DataContext db) =>
+{
+    var revenue = await db.Revenues.FindAsync(id);
+
+    if (revenue is null) return Results.NotFound();
+
+    revenue.ShiftDate = inputReveue.ShiftDate;
+    revenue.CashOpening = inputReveue.CashOpening;
+    revenue.SafeOpening = inputReveue.SafeOpening;
+    revenue.CashReceived = inputReveue.CashReceived;
+    revenue.CashWithdrawn = inputReveue.CashWithdrawn;
+    revenue.CashClosing = inputReveue.CashClosing;
+    revenue.SafeClosing = inputReveue.SafeClosing;
+    revenue.CardPayments = inputReveue.CardPayments;
+    revenue.DailyReport = inputReveue.DailyReport;
+    revenue.InternalExpenditure = inputReveue.InternalExpenditure;
+    revenue.InvoicesWithoutFiscalization = inputReveue.InvoicesWithoutFiscalization;
+    revenue.CardTips = inputReveue.CardTips;
+    revenue.DailyRevenueTotal = inputReveue.DailyRevenueTotal;
+    revenue.DailyIncome = inputReveue.DailyIncome;
+
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+});
+
 app.Run();
