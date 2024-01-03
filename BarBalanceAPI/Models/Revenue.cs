@@ -42,9 +42,9 @@ namespace BarBalanceAPI.Models
         public decimal CardTips { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal DailyRevenueTotal => InternalExpenditure + DailyReport;
+        public decimal DailyRevenueTotal { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal DailyIncome => DailyRevenueTotal + InvoicesWithoutFiscalization;
+        public decimal DailyIncome { get; set; }
     }
 }
