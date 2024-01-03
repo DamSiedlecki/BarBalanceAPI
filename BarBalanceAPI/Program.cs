@@ -12,4 +12,7 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Bar Balance minimal Api.");
 
+app.MapGet("/revenues", async (DataContext db) =>
+    await db.Revenues.ToListAsync());
+
 app.Run();
