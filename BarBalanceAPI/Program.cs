@@ -55,4 +55,16 @@ app.MapPut("/revenues/{id}", async (int id, Revenue inputReveue, DataContext db)
     return Results.NoContent();
 });
 
+app.MapDelete("revenues/{id}", async (int id, DataContext db) => {
+    if (await db.Revenues.FindAsync(id) is Revenue revenue)
+    {
+        db.Revenues.Remove(revenue);
+        await db.SaveChangesAsync();
+        return Results.NoContent();
+    }
+
+    return Results.NotFound();
+
+});
+
 app.Run();
