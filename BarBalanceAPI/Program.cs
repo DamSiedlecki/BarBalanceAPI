@@ -21,4 +21,12 @@ app.MapGet("revenues/{id}", async (int id, DataContext db) =>
         ? Results.Ok(revenue)
         : Results.NotFound());
 
+app.MapPost("/revenues", async (Revenue revenue, DataContext db) =>
+{
+    db.Revenues.Add(revenue);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/revenues/{revenue.ID}", revenue);
+});
+
 app.Run();
