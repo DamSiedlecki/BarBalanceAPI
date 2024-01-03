@@ -1,4 +1,4 @@
-﻿using BarBalanceAPI.Models;
+﻿using BarBalanceAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BarBalanceAPI.Data

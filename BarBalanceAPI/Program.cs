@@ -1,5 +1,6 @@
 using BarBalanceAPI.Data;
 using BarBalanceAPI.Models;
+using BarBalanceAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,88 +21,70 @@ revenues.MapDelete("/{id}", DeleteRevenue);
 static async Task<IResult> GetAllReveues(DataContext db)
 {
     return TypedResults.Ok(await db.Revenues.Where(r => r.IsDelete == false)
-                        .ToListAsync());
+                        .Select(r => new RevenueDTO(r)).ToArrayAsync());
 }
-//revenues.MapGet("/", async (DataContext db) =>
-//    await db.Revenues.Where(r => r.IsDelete == false)
-//                        .ToListAsync());
+
 static async Task<IResult> GetRevenue(int id, DataContext db)
 {
     return await db.Revenues.Where(r => r.IsDelete == false).FirstOrDefaultAsync(r => r.ID == id)
      is Revenue revenue
-         ? TypedResults.Ok(revenue)
+         ? TypedResults.Ok(new RevenueDTO(revenue))
          : TypedResults.NotFound();
 }
-//revenues.MapGet("/{id}", async (int id, DataContext db) =>
-//    await db.Revenues.Where(r => r.IsDelete == false).FirstOrDefaultAsync(r => r.ID == id)
-//    //await db.Revenues.FindAsync(id)
-//    is Revenue revenue
-//        ? Results.Ok(revenue)
-//        : Results.NotFound());
-static async Task<IResult> CreateRevenue(Revenue revenue, DataContext db)
+
+static async Task<IResult> CreateRevenue(RevenueDTO revenueDTO, DataContext db)
 {
+    var revenue = new Revenue
+    {
+        ShiftDate = revenueDTO.ShiftDate,
+        CashOpening = revenueDTO.CashOpening,
+        SafeOpening = revenueDTO.SafeOpening,
+        CashReceived = revenueDTO.CashReceived,
+        CashWithdrawn = revenueDTO.CashWithdrawn,
+        CashClosing = revenueDTO.CashClosing,
+        SafeClosing = revenueDTO.SafeClosing,
+        CardPayments = revenueDTO.CardPayments,
+        DailyReport = revenueDTO.DailyReport,
+        InternalExpenditure = revenueDTO.InternalExpenditure,
+        InvoicesWithoutFiscalization = revenueDTO.InvoicesWithoutFiscalization,
+        CardTips = revenueDTO.CardTips,
+        DailyRevenueTotal = revenueDTO.DailyRevenueTotal,
+        DailyIncome = revenueDTO.DailyIncome
+};
     db.Revenues.Add(revenue);
     await db.SaveChangesAsync();
+    revenueDTO = new RevenueDTO(revenue);
 
-    return TypedResults.Created($"/revenues/{revenue.ID}", revenue);
+
+    return TypedResults.Created($"/revenues/{revenue.ID}", revenueDTO);
 }
-//revenues.MapPost("/", async (Revenue revenue, DataContext db) =>
-//{
-//    db.Revenues.Add(revenue);
-//    await db.SaveChangesAsync();
 
-//    return Results.Created($"/revenues/{revenue.ID}", revenue);
-//});
-static async Task<IResult> UpdateRevenue(int id, Revenue inputReveue, DataContext db)
+static async Task<IResult> UpdateRevenue(int id, RevenueDTO reveueDTO, DataContext db)
 {
     var revenue = await db.Revenues.Where(r => r.IsDelete == false).FirstOrDefaultAsync(r => r.ID == id);
 
     if (revenue is null) return Results.NotFound();
 
-    revenue.ShiftDate = inputReveue.ShiftDate;
-    revenue.CashOpening = inputReveue.CashOpening;
-    revenue.SafeOpening = inputReveue.SafeOpening;
-    revenue.CashReceived = inputReveue.CashReceived;
-    revenue.CashWithdrawn = inputReveue.CashWithdrawn;
-    revenue.CashClosing = inputReveue.CashClosing;
-    revenue.SafeClosing = inputReveue.SafeClosing;
-    revenue.CardPayments = inputReveue.CardPayments;
-    revenue.DailyReport = inputReveue.DailyReport;
-    revenue.InternalExpenditure = inputReveue.InternalExpenditure;
-    revenue.InvoicesWithoutFiscalization = inputReveue.InvoicesWithoutFiscalization;
-    revenue.CardTips = inputReveue.CardTips;
-    revenue.DailyRevenueTotal = inputReveue.DailyRevenueTotal;
-    revenue.DailyIncome = inputReveue.DailyIncome;
+    revenue.ShiftDate = reveueDTO.ShiftDate;
+    revenue.CashOpening = reveueDTO.CashOpening;
+    revenue.SafeOpening = reveueDTO.SafeOpening;
+    revenue.CashReceived = reveueDTO.CashReceived;
+    revenue.CashWithdrawn = reveueDTO.CashWithdrawn;
+    revenue.CashClosing = reveueDTO.CashClosing;
+    revenue.SafeClosing = reveueDTO.SafeClosing;
+    revenue.CardPayments = reveueDTO.CardPayments;
+    revenue.DailyReport = reveueDTO.DailyReport;
+    revenue.InternalExpenditure = reveueDTO.InternalExpenditure;
+    revenue.InvoicesWithoutFiscalization = reveueDTO.InvoicesWithoutFiscalization;
+    revenue.CardTips = reveueDTO.CardTips;
+    revenue.DailyRevenueTotal = reveueDTO.DailyRevenueTotal;
+    revenue.DailyIncome = reveueDTO.DailyIncome;
 
     await db.SaveChangesAsync();
 
     return TypedResults.NoContent();
 }
-//revenues.MapPut("/{id}", async (int id, Revenue inputReveue, DataContext db) =>
-//{
-//    var revenue = await db.Revenues.Where(r => r.IsDelete == false).FirstOrDefaultAsync(r => r.ID == id);
 
-//    if (revenue is null) return Results.NotFound();
-
-//    revenue.ShiftDate = inputReveue.ShiftDate;
-//    revenue.CashOpening = inputReveue.CashOpening;
-//    revenue.SafeOpening = inputReveue.SafeOpening;
-//    revenue.CashReceived = inputReveue.CashReceived;
-//    revenue.CashWithdrawn = inputReveue.CashWithdrawn;
-//    revenue.CashClosing = inputReveue.CashClosing;
-//    revenue.SafeClosing = inputReveue.SafeClosing;
-//    revenue.CardPayments = inputReveue.CardPayments;
-//    revenue.DailyReport = inputReveue.DailyReport;
-//    revenue.InternalExpenditure = inputReveue.InternalExpenditure;
-//    revenue.InvoicesWithoutFiscalization = inputReveue.InvoicesWithoutFiscalization;
-//    revenue.CardTips = inputReveue.CardTips;
-//    revenue.DailyRevenueTotal = inputReveue.DailyRevenueTotal;
-//    revenue.DailyIncome = inputReveue.DailyIncome;
-
-//    await db.SaveChangesAsync();
-
-//    return Results.NoContent();
-//});
 static async Task<IResult> DeleteRevenue(int id, DataContext db)
 {
     if (await db.Revenues.Where(r => r.IsDelete == false).FirstOrDefaultAsync(r => r.ID == id)
@@ -116,19 +99,5 @@ static async Task<IResult> DeleteRevenue(int id, DataContext db)
 
     return TypedResults.NotFound();
 }
-//revenues.MapDelete("/{id}", async (int id, DataContext db) => {
-//    if (await db.Revenues.Where(r => r.IsDelete == false).FirstOrDefaultAsync(r => r.ID == id)
-//                        is Revenue revenue)
-//    {        
-//        revenue.IsDelete = true;
-
-//        await db.SaveChangesAsync();
-
-//        return Results.NoContent();
-//    }
-
-//    return Results.NotFound();
-
-//});
 
 app.Run();
