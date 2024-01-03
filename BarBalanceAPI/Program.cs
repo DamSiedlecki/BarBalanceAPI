@@ -13,10 +13,12 @@ var app = builder.Build();
 var revenues = app.MapGroup("/revenues");
 
 revenues.MapGet("/", async (DataContext db) =>
-    await db.Revenues.ToListAsync());
+    await db.Revenues.Where(r => r.IsDelete == false)
+                        .ToListAsync());
 
 revenues.MapGet("/{id}", async (int id, DataContext db) =>
-    await db.Revenues.FindAsync(id)
+    await db.Revenues.Where(r => r.IsDelete == false).FirstOrDefaultAsync(r => r.ID == id)
+    //await db.Revenues.FindAsync(id)
     is Revenue revenue
         ? Results.Ok(revenue)
         : Results.NotFound());
@@ -31,7 +33,7 @@ revenues.MapPost("/", async (Revenue revenue, DataContext db) =>
 
 revenues.MapPut("/{id}", async (int id, Revenue inputReveue, DataContext db) =>
 {
-    var revenue = await db.Revenues.FindAsync(id);
+    var revenue = await db.Revenues.Where(r => r.IsDelete == false).FirstOrDefaultAsync(r => r.ID == id);
 
     if (revenue is null) return Results.NotFound();
 
@@ -56,10 +58,13 @@ revenues.MapPut("/{id}", async (int id, Revenue inputReveue, DataContext db) =>
 });
 
 revenues.MapDelete("/{id}", async (int id, DataContext db) => {
-    if (await db.Revenues.FindAsync(id) is Revenue revenue)
-    {
-        db.Revenues.Remove(revenue);
+    if (await db.Revenues.Where(r => r.IsDelete == false).FirstOrDefaultAsync(r => r.ID == id)
+                        is Revenue revenue)
+    {        
+        revenue.IsDelete = true;
+
         await db.SaveChangesAsync();
+
         return Results.NoContent();
     }
 
