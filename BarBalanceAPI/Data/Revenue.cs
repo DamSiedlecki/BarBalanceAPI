@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace BarBalanceAPI.Entities
+namespace BarBalanceAPI.Data
 {
     public class Revenue
     {
@@ -46,7 +46,7 @@ namespace BarBalanceAPI.Entities
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal DailyIncome { get; set; }
-        
+
         public bool IsDelete { get; set; }
     }
 }
