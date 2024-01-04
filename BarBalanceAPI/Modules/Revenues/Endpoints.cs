@@ -1,14 +1,15 @@
 ﻿using BarBalanceAPI.Data;
 using BarBalanceAPI.Models;
+using Carter;
 using Microsoft.EntityFrameworkCore;
 
-namespace BarBalanceAPI.Endpoints
+namespace BarBalanceAPI.Modules.Revenues
 {
-    public static class Revenues
+    public class Endpoints : CarterModule
     {
-        public static void RegisterRevenuesEndoints(this IEndpointRouteBuilder routes)
+        public override void AddRoutes(IEndpointRouteBuilder app)
         {
-            var revenues = routes.MapGroup("/revenues");
+            var revenues = app.MapGroup("/revenues");
 
             revenues.MapGet("/", GetAllReveues);
             revenues.MapGet("/{id}", GetRevenue);

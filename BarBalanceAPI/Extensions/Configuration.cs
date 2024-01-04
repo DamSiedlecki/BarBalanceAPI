@@ -1,4 +1,5 @@
 ﻿using BarBalanceAPI.Data;
+using Carter;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 
@@ -10,6 +11,7 @@ namespace BarBalanceAPI.Extensions
         {
             builder.Services
                 .AddEndpointsApiExplorer()
+                .AddCarter()
                 .AddDbContext<DataContext>(options =>
                 {
                     options.UseSqlServer(builder.Configuration.GetConnectionString("BarBalanceAPIConnection"));
@@ -18,6 +20,7 @@ namespace BarBalanceAPI.Extensions
         public static void RegisterMiddlewares(this WebApplication app)
         {
             app.UseHttpsRedirection();
+            app.MapCarter();
         }
     }
 }
