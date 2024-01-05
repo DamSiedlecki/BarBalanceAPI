@@ -1,4 +1,5 @@
 ﻿using BarBalanceAPI.Data;
+using BarBalanceAPI.Middleware;
 using Carter;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
@@ -21,6 +22,7 @@ namespace BarBalanceAPI.Extensions
         {
             app.UseHttpsRedirection();
             app.MapCarter();
+            app.UseExceptionHandleMiddleware();
         }
     }
 }
