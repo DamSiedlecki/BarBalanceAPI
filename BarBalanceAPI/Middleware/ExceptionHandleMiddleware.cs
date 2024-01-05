@@ -1,4 +1,5 @@
 ﻿using BarBalanceAPI.Models;
+using Serilog;
 
 namespace BarBalanceAPI.Middleware
 {
@@ -26,6 +27,8 @@ namespace BarBalanceAPI.Middleware
 
         private async Task HandleExeption(Exception ex, HttpContext context)
         {
+            Log.Error(ex, "Error happend!");
+
             if (ex is InvalidOperationException)
             {
                 context.Response.StatusCode = 400;

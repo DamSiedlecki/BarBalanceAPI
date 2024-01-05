@@ -2,6 +2,7 @@
 using BarBalanceAPI.Middleware;
 using Carter;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Runtime.CompilerServices;
 
 namespace BarBalanceAPI.Extensions
@@ -10,6 +11,7 @@ namespace BarBalanceAPI.Extensions
     {
         public static void RegisterServices(this WebApplicationBuilder builder)
         {
+            builder.Host.UseSerilog();
             builder.Services
                 .AddEndpointsApiExplorer()
                 .AddCarter()

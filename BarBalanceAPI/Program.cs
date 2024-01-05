@@ -2,13 +2,33 @@ using BarBalanceAPI.Data;
 using BarBalanceAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using BarBalanceAPI.Extensions;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/BarBalanceAPILogs.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+try
+{
+    Log.Information("Starting BarBalanceAPI");
 
-builder.RegisterServices();
+    var builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+    builder.RegisterServices();
 
-app.RegisterMiddlewares();
+    var app = builder.Build();
 
-app.Run();
+    app.RegisterMiddlewares();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex,"Applicaion terminated unexpectedly.");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+
+
